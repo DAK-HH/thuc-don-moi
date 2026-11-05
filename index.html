@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Thực đơn gia đình</title>
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#2f7d5b"><link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f6f7f5;--card:#fff;--tx:#1d2a24;--mut:#5d6b64;--ac:#2f7d5b;--acs:#e3f1ea;--bd:#d9dfdb;--wn:#fff4e0;--wnt:#7a4b00}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#141916;--card:#1d2420;--tx:#e8eeea;--mut:#9fb0a7;--ac:#5fc08f;--acs:#22362c;--bd:#33403a;--wn:#3a2f17;--wnt:#f1c779}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#141916;--card:#1d2420;--tx:#e8eeea;--mut:#9fb0a7;--ac:#5fc08f;--acs:#22362c;--bd:#33403a;--wn:#3a2f17;--wnt:#f1c779}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:760px;margin:0 auto;padding:16px}
+h1{font-size:20px;margin:4px 0 12px}h2{font-size:16px;margin:18px 0 8px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button,.btn{padding:9px 12px;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:10px;font:inherit;cursor:pointer}
+.seg button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.tabs button{flex:1}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-top:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+label{font-size:12px;color:var(--mut);display:block;margin-bottom:3px}
+input,select,textarea{width:100%;padding:8px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit}
+.row{display:flex;gap:8px}.row input{flex:1}
+.chip{display:inline-block;background:var(--acs);border-radius:16px;padding:4px 10px;margin:3px 4px 3px 0}
+.chip b{cursor:pointer;margin-left:6px;color:var(--mut)}
+.sg{display:flex;justify-content:space-between;gap:8px;align-items:center;border-top:1px solid var(--bd);padding:7px 0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-top:10px}
+.stat{background:var(--acs);border-radius:10px;padding:8px}.stat b{display:block;font-size:17px;color:var(--ac)}.stat span{font-size:12px;color:var(--mut)}
+.warn{background:var(--wn);color:var(--wnt);border-radius:10px;padding:10px 12px;margin-top:10px;font-size:14px}
+.scroll{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:420px;font-size:14px}
+th,td{border:1px solid var(--bd);padding:7px 8px;text-align:left;vertical-align:top}th{background:var(--acs)}
+small{color:var(--mut)}
+</style></head><body><main>
+<h1>🥗 Thực đơn gia đình</h1>
+<div class="seg tabs" id="tabs"></div>
+<div id="out"></div>
+<p><small>Ước tính tham khảo, không thay thế tư vấn của bác sĩ/chuyên gia dinh dưỡng. 1 bát cơm vừa đầy ≈ 150 g cơm chín.</small></p>
+</main>
+<script>
+var P=[{n:"Anh",t:"a",s:"m",a:30,h:170,w:70,act:1.375,goal:"keep"},{n:"Chị",t:"a",s:"f",a:30,h:160,w:55,act:1.375,goal:"keep"},{n:"Bé",t:"k"}];
+var S={tab:0,meal:"o",who:[1,1,1],dishes:[],rau:1,ing:""};
+try{var sv=JSON.parse(localStorage.getItem("tdgd2")||"null");if(sv){sv.P.forEach(function(x,i){Object.assign(P[i],x)});Object.assign(S,sv.S)}}catch(e){}
+function save(){try{localStorage.setItem("tdgd2",JSON.stringify({P:P,S:S}))}catch(e){}}
+var SH={s:.28,t:.38,o:.34},PS={s:.25,t:.4,o:.35},ML={s:"Sáng",t:"Trưa",o:"Tối"};
+var PK=[["trứng","trứng","e"],["đậu phụ","đậu phụ","t"],["đậu hũ","đậu phụ","t"],["tôm","tôm","m"],["cá","cá","m"],["gà","gà","m"],["bò","thịt bò","m"],["heo","thịt heo","m"],["nạc","thịt nạc","m"],["chả","chả","m"],["thịt","thịt","m"]];
+var RK=["bắp cải","su su","rau muống","rau ngót","bí đỏ","bí xanh","súp lơ","đậu que","cà chua","cà rốt","dưa leo","khổ qua","xà lách","ớt chuông","hành tây","nấm","mướp","giá","bầu","bí","cải","rau"];
+var SK=["bánh mì","cháo","bún","phở","miến","mì","xôi","khoai"];
+var SUG=["Gà luộc xé","Gà kho gừng","Ức gà áp chảo + salad dưa leo","Trứng chưng thịt","Trứng chiên cà rốt","Salad trứng dưa leo cà chua","Su su xào trứng","Đậu phụ sốt cà chua","Đậu hũ nhồi thịt","Thịt nạc rim nhạt","Bò xào ớt chuông hành tây","Đậu que xào thịt","Cá hấp gừng","Canh chua cá cà chua","Tôm rim","Canh bí đỏ nấu thịt","Canh bầu nấu thịt băm","Canh cải thịt băm","Canh rau ngót thịt băm","Canh khổ qua nhồi thịt","Canh cải nấu tôm","Rau muống luộc","Rau muống xào tỏi","Cải luộc","Cải xào tỏi","Súp lơ luộc","Bắp cải luộc","Miến gà","Cháo thịt bằm cà rốt","Bánh mì ốp la trứng","Khoai lang hấp"];
+function parse(n){var l=n.toLowerCase().normalize("NFC"),pt=null,rv=null,st=null;
+PK.some(function(k){if(l.indexOf(k[0])>=0){pt=k;return 1}});RK.some(function(k){if(l.indexOf(k)>=0){rv=k;return 1}});SK.some(function(k){if(l.indexOf(k)>=0){st=k;return 1}});
+return{n:n,pt:pt,rv:rv,st:st}}
+function calc(p){var bmr=10*p.w+6.25*p.h-5*p.a+(p.s=="m"?5:-161),td=bmr*p.act,bmi=p.w/Math.pow(p.h/100,2),t=td,note="";
+if(p.goal=="lose"){if(bmi<23)note="BMI "+bmi.toFixed(1)+" ở mức bình thường/thấp nên không giảm cân, thực đơn tính ở mức giữ cân.";else t=td-500}
+if(p.goal=="gain")t=td+300;var fl=p.s=="m"?1500:1200;if(t<fl)t=fl;
+return{bmi:bmi,t:Math.round(t/10)*10,pr:Math.round(p.w*(p.goal=="lose"&&!note?1.2:1)),note:note}}
+function plan(p){var D=S.dishes.map(parse),nP=D.filter(function(d){return d.pt}).length,nR=D.filter(function(d){return d.rv}).length,hasSt=D.some(function(d){return d.st}),kid=p.t=="k",mk,eq,rg,eggHi=0;
+if(kid){mk=300;eq=40;rg=80}else{var c=calc(p);mk=c.t*SH[S.meal];eq=Math.max(80,Math.round((c.pr*PS[S.meal]-8)/.2/10)*10);rg=200*S.rau}
+var pk=0,rk=0,rows=D.map(function(d){var t=[];
+if(d.pt){var e=eq/nP,ty=d.pt[2],a;if(ty=="e"){a=Math.max(1,Math.round(e/30));if(a>3&&!kid)eggHi=1;t.push(a+" quả trứng");pk+=a*75}else if(ty=="t"){a=Math.round(e*2/10)*10;t.push(a+" g đậu phụ");pk+=a*.8}else{a=Math.round(e/10)*10;t.push(a+" g "+d.pt[1]);pk+=a*1.4}}
+if(d.rv){var g=Math.round(rg/nR/10)*10;t.push(g+" g "+d.rv);rk+=g*.25}
+return{n:d.n,t:t,st:d.st}});
+var rice=Math.max(40,Math.round((mk-pk-rk-(kid?20:60))/1.3/10)*10);
+if(kid)rice=Math.min(rice,80);
+rows=rows.map(function(r){if(r.st)r.t.push(Math.round(rice*1.2/10)*10+" g "+r.st);return{n:r.n,t:r.t.join(" + ")||"tuỳ thích"}});
+if(!hasSt)rows.push({n:"Cơm",t:rice+" g cơm chín"});
+return{rows:rows,kcal:Math.round(pk+rk+(kid?20:60)+rice*1.3),mk:Math.round(mk),nP:nP,nR:nR,eggHi:eggHi}}
+function res(){var ids=[0,1,2].filter(function(i){return S.who[i]});
+if(!ids.length)return'<div class="warn">Chọn ít nhất 1 người ăn.</div>';
+if(!S.dishes.length)return'<div class="warn">Chọn hoặc thêm món định nấu ở trên để xem mình nên ăn bao nhiêu.</div>';
+var pl=ids.map(function(i){return plan(P[i])}),h='<div class="card scroll"><table><tr><th>Món</th>'+ids.map(function(i){return'<th>'+P[i].n+(P[i].t=="k"?" 👶":"")+'</th>'}).join("")+'</tr>';
+pl[0].rows.forEach(function(r,j){h+='<tr><td>'+r.n+'</td>'+pl.map(function(x){return'<td>'+x.rows[j].t+'</td>'}).join("")+'</tr>'});
+h+='<tr><td><small>≈ kcal (mục tiêu bữa)</small></td>'+pl.map(function(x){return'<td><small>'+x.kcal+' ('+x.mk+')</small></td>'}).join("")+'</tr></table></div>';
+var w=[],x=pl[0];
+if(!x.nP)w.push("Chưa có món đạm: nên thêm thịt, cá, trứng hoặc đậu phụ để no lâu.");
+if(!x.nR)w.push("Chưa có món rau: nên thêm rau luộc hoặc canh rau.");
+if(pl.some(function(q){return q.eggHi}))w.push("Số trứng hơi nhiều, nên thêm một món đạm khác (đậu phụ, thịt) rồi bớt trứng.");
+if(S.dishes.join(" ").toLowerCase().indexOf("tôm")>=0&&ids.some(function(i){return P[i].notom}))w.push("Món có tôm: không dành cho người đang tránh tôm. Nếu nấu riêng thì dùng dụng cụ và dầu riêng.");
+if(S.who[2])w.push("Phần của bé: nấu mềm, thái nhỏ, múc ra trước khi nêm mặn.");
+if(S.rau>1)w.push("Ăn nhiều rau hơn thì cơm giảm nhẹ (rau ít calo), đạm giữ nguyên để no lâu. Còn đói thì thêm rau chứ đừng thêm cơm.");
+return h+w.map(function(t){return'<div class="warn">'+t+'</div>'}).join("")}
+function sug(){var it=S.ing.toLowerCase().normalize("NFC").split(/[,;\n]+/).map(function(x){return x.trim()}).filter(Boolean),el=document.getElementById("sug"),L=[];
+if(!it.length){el.innerHTML="";return}
+var avoid=S.who[0]&&P[0].notom;
+SUG.forEach(function(n,i){var d=parse(n),ks=[d.pt&&d.pt[1],d.rv].filter(Boolean);if(!ks.length||(avoid&&d.pt&&d.pt[1]=="tôm"))return;
+var m=ks.filter(function(k){return it.some(function(x){return x.indexOf(k)>=0||(x.length>2&&k.indexOf(x)>=0)})});
+if(m.length&&m.length>=Math.ceil(ks.length/2))L.push({i:i,r:m.length/ks.length})});
+L.sort(function(a,b){return b.r-a.r});
+el.innerHTML=L.length?L.slice(0,8).map(function(x){return'<div class="sg"><span>'+SUG[x.i]+'</span><button class="btn" onclick="add(SUG['+x.i+'])">＋ Chọn</button></div>'}).join(""):'<small>Chưa có món khớp, bạn tự thêm món ở bên dưới.</small>'}
+function add(n){n=(n||"").trim();if(n&&S.dishes.indexOf(n)<0){S.dishes.push(n);save();draw()}}
+function setf(i,k,v){P[i][k]=(v!==""&&!isNaN(v))?+v:v;save();draw()}
+function fld(i,k,l,o){var v=P[i][k];if(o)return'<div><label>'+l+'</label><select onchange="setf('+i+',\''+k+'\',this.value)">'+o.map(function(q){return'<option value="'+q[0]+'"'+(v==q[0]?" selected":"")+'>'+q[1]+'</option>'}).join("")+'</select></div>';
+return'<div><label>'+l+'</label><input type="number" value="'+v+'" onchange="setf('+i+',\''+k+'\',this.value)"></div>'}
+function bua(){var h='<div class="card"><label>Bữa nào?</label><div class="seg">'+["s","t","o"].map(function(m){return'<button class="'+(S.meal==m?"on":"")+'" onclick="S.meal=\''+m+'\';S.who=\''+m+'\'==\'o\'?[1,1,1]:[1,1,0];save();draw()">'+ML[m]+'</button>'}).join("")+'</div><label style="margin-top:10px">Ai ăn bữa này?</label><div class="seg">'+P.map(function(p,i){return'<button class="'+(S.who[i]?"on":"")+'" onclick="S.who['+i+']^=1;save();draw()">'+p.n+'</button>'}).join("")+'</div><small>Bé ăn ở lớp thì bỏ tick ở bữa đó.</small></div>';
+h+='<div class="card"><label>Nhà đang có nguyên liệu gì? (cách nhau bằng dấu phẩy, bỏ trống cũng được)</label><textarea id="ing" rows="2" placeholder="VD: trứng, su su, cải, đậu phụ" oninput="S.ing=this.value;save();sug()">'+S.ing.replace(/</g,"&lt;")+'</textarea><div id="sug"></div></div>';
+h+='<div class="card"><label>Món định nấu</label>'+(S.dishes.length?S.dishes.map(function(d,i){return'<span class="chip">'+d.replace(/</g,"&lt;")+'<b onclick="S.dishes.splice('+i+',1);save();draw()">✕</b></span>'}).join(""):'<small>Chưa có món nào.</small>')+'<div class="row" style="margin-top:8px"><input id="nd" placeholder="VD: su su xào trứng" onkeydown="if(event.key==\'Enter\')add(this.value)"><button class="btn" onclick="add(document.getElementById(\'nd\').value)">Thêm</button></div></div>';
+h+='<div class="card"><label>Mức ăn rau</label><select onchange="S.rau=+this.value;save();draw()">'+[[1,"Bình thường (khoảng 200 g/người lớn)"],[1.5,"Nhiều hơn (×1,5)"],[2,"Rất nhiều (×2)"]].map(function(q){return'<option value="'+q[0]+'"'+(S.rau==q[0]?" selected":"")+'>'+q[1]+'</option>'}).join("")+'</select></div>';
+return h+'<h2>Nên ăn bao nhiêu?</h2>'+res()}
+function prof(){var h="";[0,1].forEach(function(i){var p=P[i],c=calc(p);
+h+='<div class="card"><b>'+p.n+'</b><div class="grid" style="margin-top:8px">'+fld(i,"a","Tuổi")+fld(i,"h","Cao (cm)")+fld(i,"w","Cân nặng (kg)")+fld(i,"act","Vận động",[[1.2,"Ít"],[1.375,"Nhẹ"],[1.55,"Vừa"],[1.725,"Nhiều"]])+fld(i,"goal","Mục tiêu",[["lose","Giảm cân"],["keep","Giữ cân"],["gain","Tăng cân"]])+fld(i,"notom","Tránh tôm",[["","Không"],[1,"Có"]])+'</div><div class="stats"><div class="stat"><b>'+c.bmi.toFixed(1)+'</b><span>BMI</span></div><div class="stat"><b>'+c.t+'</b><span>kcal/ngày</span></div><div class="stat"><b>'+c.pr+' g</b><span>đạm/ngày</span></div></div>'+(c.note?'<div class="warn">'+c.note+'</div>':"")+'</div>'});
+return h+'<div class="card"><b>Bé</b><br><small>Khẩu phần bé tính cố định khoảng ⅓ người lớn: cơm ~50–80 g, đạm ~40 g, rau ~80 g, nấu mềm và nêm nhạt. Bé 1–3 tuổi cần khoảng 1000–1200 kcal/ngày, nếu lo lắng về cân nặng hãy hỏi bác sĩ nhi.</small></div>'}
+function draw(){document.getElementById("tabs").innerHTML=["🍽️ Bữa ăn","👤 Hồ sơ"].map(function(n,i){return'<button class="'+(S.tab==i?"on":"")+'" onclick="S.tab='+i+';save();draw()">'+n+'</button>'}).join("");
+document.getElementById("out").innerHTML=S.tab?prof():bua();if(!S.tab)sug()}
+draw();
+if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(function(){});
+</script></body></html>
